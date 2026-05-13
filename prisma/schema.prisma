@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  books     Book[]
+}
+
+model Book {
+  id          String   @id @default(cuid())
+  title       String
+  author      String
+  category    String
+  description String?
+  coverImage  String?
+  fileUrl     String?
+  pages       Int
+  isbn        String?  @unique
+  rating      Float    @default(0)
+  downloads   Int      @default(0)
+  views       Int      @default(0)
+  isPremium   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  books Book[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  PREMIUM
+}
